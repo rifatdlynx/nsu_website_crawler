@@ -13,9 +13,8 @@ links = []
 
 # Appending all the links in the list
 for link in nsu.find_all('a'):
-  if 'href' in link.attrs:
-    links.append((link.attrs['href']))
-
+    if 'href' in link.attrs:
+        links.append((link.attrs['href']))
 
 ### Editing Dataframes of list
 # Converting the list to dataframe
@@ -33,7 +32,8 @@ links_df = links_df[links_df["links"].str.contains("#") == False]
 internal_links = links_df[links_df["links"].str.contains("http") == False]
 
 # Adding Https infront of all the addresses
-internal_links['links'] = 'http://www.northsouth.edu/' + internal_links['links'].astype(str)
+internal_links['links'] = 'http://www.northsouth.edu/' + internal_links[
+    'links'].astype(str)
 
 # Creating new dataframe for external links
 external_links = links_df[links_df["links"].str.contains("http") == True]
@@ -45,72 +45,80 @@ print(internal_links.head(2))
 print("External Links")
 print(external_links.head(2))
 
-
 ### Editing the lists of links
 # Internal link and External Link seperated into their own list
 internal_link_list = []
 external_link_list = []
 
 for item in links:
-  if "http" in item:
-    external_link_list.append(item)
-  elif "#" in item:
-    continue
-  elif "pdf" in item:
-    continue
-  else:
-    internal_link_list.append(item)
+    if "http" in item:
+        external_link_list.append(item)
+    elif "#" in item:
+        continue
+    elif "pdf" in item:
+        continue
+    else:
+        internal_link_list.append(item)
 
-# Adding Http to intenal links 
+# Adding Http to intenal links
 internal_link_list_full = []
 for item in internal_link_list:
-  temp = "http://www.northsouth.edu/" + item
-  internal_link_list_full.append(temp)
+    temp = "http://www.northsouth.edu/" + item
+    internal_link_list_full.append(temp)
 
 print(len(internal_link_list_full))
-print(internal_link_list_full)
+
+#print(internal_link_list_full)
+
+
+### Defining Function For Getting Links
+def get_links_from_list(url_list, temp_url_list):
+    for item in url_list:
+        print("Accessing URL -------------------------- " + item)
+        read_url = urlopen(item)
+        nsu_data = soup(read_url.read())
+        for link in nsu_data.find_all('a'):
+            if 'href' in link.attrs:
+                temp = link.attrs['href']
+                if "http" in temp:
+                    continue
+                elif "#" in temp:
+                    continue
+                elif "pdf" in temp:
+                    continue
+                elif "//" in temp:
+                    continue
+                elif "gmail" in temp:
+                    continue
+                elif "mailto" in temp:
+                    continue
+                elif temp in temp_url_list:
+                    continue
+                else:
+                    print("Appending Link ----- http://www.northsouth.edu/" +
+                          temp)
+                    temp_url_list.append("http://www.northsouth.edu/" + temp)
+    print("Temp Url List Size - " + len(temp_url_list))
+
 
 # Getting links from the links in internal links list
-for item in internal_link_list_full:
-  print("Accessing URL -------------------------- " + item)
-  read_url = urlopen(item)
-  nsu_data = soup(read_url.read())
-  for link in nsu_data.find_all('a'):
-    if 'href' in link.attrs:
-      temp = link.attrs['href']
-      print("Link Found - " + temp)
-      if "http" in temp:
-        continue
-      elif "#" in temp:
-        continue
-      elif "pdf" in temp:
-        continue
-      elif "//" in temp:
-        continue
-      elif "gmail" in temp:
-        continue
-      elif ".com" in temp:
-        continue
-      elif temp in internal_link_list_full:
-        continue
-      else:
-        temp = "http://www.northsouth.edu/" + temp
-        print("Appending Link ----- " + temp)
-        internal_link_list_full.append(temp)
+temp_url_list_1 = []
+temp_url_list_2 = []
 
-print(len(internal_link_list_full))
-
-
+get_links_from_list(internal_link_list_full, temp_url_list_1)
+get_links_from_list(temp_url_list_1, temp_url_list_2)
 
 ### For getting the data in the list
 for data in nsu(['style', 'script', 'a']):
-  # Remove tags
-  data.decompose()
+    # Remove tags
+    data.decompose()
 
 data = nsu.get_text()
 data.replace("\n", " ")
 
-website_data = pd.DataFrame({'address': ['http://www.northsouth.edu/'],
-                             'data': [data]})
+website_data = pd.DataFrame({
+    'address': ['http://www.northsouth.edu/'],
+    'data': [data]
+})
 #website_data[data].replace("\n"," ")
 print(website_data)
