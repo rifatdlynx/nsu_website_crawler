@@ -98,7 +98,8 @@ def get_links_from_list(url_list, temp_url_list):
                     print("Appending Link ----- http://www.northsouth.edu/" +
                           temp)
                     temp_url_list.append("http://www.northsouth.edu/" + temp)
-    print("Temp Url List Size - " + len(temp_url_list))
+    print("def get links from list temp list size")
+    print(len(temp_url_list))
 
 
 # Getting links from the links in internal links list
